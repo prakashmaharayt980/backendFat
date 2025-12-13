@@ -9,7 +9,11 @@ class BlogPost(models.Model):
     content = models.TextField() # Rich text content expected
     image = models.ImageField(upload_to='blog/', null=True, blank=True)
     category = models.CharField(max_length=100, blank=True)
-    read_time = models.CharField(max_length=20, blank=True, help_text="e.g. '5 min read'")
+    # meta_title = models.Cha
+
+    meta_title = models.CharField(max_length=200, blank=True)
+    meta_description = models.TextField(blank=True)
+    meta_keywords = models.CharField(max_length=255, blank=True)
     
     published_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
