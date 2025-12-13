@@ -1,34 +1,44 @@
-from rest_framework import viewsets, permissions, pagination
+from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import status
+from django.shortcuts import get_object_or_404
+from rest_framework.permissions import AllowAny
+
 from .models import BlogPost
-from .serializers import BlogPostListSerializer, BlogPaginationSerializer
+from .serializers import BlogPostSerializer
 
-class CustomPagination(pagination.PageNumberPagination):
-    page_size = 10
-    page_size_query_param = 'page_size'
-    max_page_size = 100
+class BlogPostAPIView(APIView):
+    permission_classes = [AllowAny]  # Public access
 
-    def get_paginated_response(self, data):
-        return Response({
-            'data': data,
-            'meta': {
-                'current_page': self.page.number,
-                'last_page': self.page.paginator.num_pages,
-                'per_page': self.page_size,
-                'total': self.page.paginator.count
-            }
-        })
+    def get(self, request, pk=None):
+        if pk:
+            post = get_object_or_404(BlogPost, pk=pk)
+            serializer = BlogPostSerializer(post)
+            return Response(serializer.data)
+        posts = BlogPost.objects.all().order_by('-published_at')
+        serializer = BlogPostSerializer(posts, many=True)
+        return Response(serializer.data)
 
-class BlogPostViewSet(viewsets.ModelViewSet):
-    queryset = BlogPost.objects.filter(is_published=True).order_by('-published_at')
-    serializer_class = BlogPostListSerializer
-    pagination_class = CustomPagination
-    lookup_field = 'slug'
+    def post(self, request):
+        # Assign currently logged-in user as author if authentication is used
+        # Here we assume anonymous creation; for real app, use request.user
+        data = request.data.copy()
+        # data['author'] = request.user.id  # Uncomment if auth
+        serializer = BlogPostSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get_permissions(self):
-        if self.action in ['list', 'retrieve']:
-            return [permissions.AllowAny()]
-        return [permissions.IsAuthenticated()]
+    def put(self, request, pk):
+        post = get_object_or_404(BlogPost, pk=pk)
+        serializer = BlogPostSerializer(post, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+    def delete(self, request, pk):
+        post = get_object_or_404(BlogPost, pk=pk)
+        post.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
