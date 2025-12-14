@@ -4,6 +4,7 @@ from rest_framework import status
 from products.serializers import CategorySerializer
 from products.models import Category
 from django.shortcuts import get_object_or_404
+from products.pagination import ProductsPagination
 
 class CreateCategoryAPIView(BaseAPIView):
     def post(self, request):
@@ -17,7 +18,10 @@ class CreateCategoryAPIView(BaseAPIView):
 class GetAllCategoryAPIView(BaseAPIView):
     def get(self, request):
         categories = Category.objects.filter(parent__isnull=True)
-        return Response(CategorySerializer(categories, many=True).data)
+        paginator = ProductsPagination()
+        page = paginator.paginate_queryset(categories,request)
+        serializer = CategorySerializer(page,many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 
 class GetCategoryByIdAPIView(BaseAPIView):
