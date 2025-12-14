@@ -64,6 +64,9 @@ class AdminLoginView(APIView):
         email = request.data.get("email")
         password = request.data.get("password")
 
+        print(email)
+        print(password)
+
         if not email or not password:
             return Response({"detail": "Email and password required"}, status=400)
 

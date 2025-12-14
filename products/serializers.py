@@ -116,59 +116,12 @@
 #         return None # Placeholder
 
 
-from rest_framework import serializers
-from .models import (
-    Brand, Category, Product, ProductImage, ProductVariant
-)
-
-# --------------------
-# BRAND
-# --------------------
-class BrandSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Brand
-        fields = '__all__'
 
 
 # --------------------
 # CATEGORY
 # --------------------
-class CategorySerializer(serializers.ModelSerializer):
-    children = serializers.SerializerMethodField()
 
-    class Meta:
-        model = Category
-        fields = '__all__'
-
-    def get_children(self, obj):
-        return CategorySerializer(obj.children.all(), many=True).data
 
 
 # --------------------
-# PRODUCT IMAGE
-# --------------------
-class ProductImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProductImage
-        fields = '__all__'
-
-
-# --------------------
-# PRODUCT VARIANT
-# --------------------
-class ProductVariantSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProductVariant
-        fields = '__all__'
-
-
-# --------------------
-# PRODUCT
-# --------------------
-class ProductSerializer(serializers.ModelSerializer):
-    images = ProductImageSerializer(many=True, read_only=True)
-    variants = ProductVariantSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Product
-        fields = '__all__'
