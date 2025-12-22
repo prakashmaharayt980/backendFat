@@ -4,7 +4,7 @@ from products.serializers import BrandSerializer
 from rest_framework import status
 from products.models import Brand
 from django.shortcuts import get_object_or_404
-
+from products.pagination import ProductsPagination
 
 class CreateBrandAPIView(BaseAPIView):
     def post(self, request):
@@ -16,7 +16,10 @@ class CreateBrandAPIView(BaseAPIView):
 class GetAllBrandAPIView(BaseAPIView):
     def get(self, request):
         brands = Brand.objects.all()
-        return Response(BrandSerializer(brands, many=True).data)
+        paginator = ProductsPagination()
+        page = paginator.paginate_queryset(brands,request)
+        serializer = BrandSerializer(page,many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 
 class GetBrandByIdAPIView(BaseAPIView):

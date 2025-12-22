@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from products.serializers import ProductSerializer,ProductImageSerializer,ProductVariantSerializer
 from products.models import Product,ProductImage,ProductVariant
 from django.shortcuts import get_object_or_404
+from products.pagination import ProductsPagination
 
 class CreateProductAPIView(BaseAPIView):
     def post(self, request):
@@ -15,7 +16,10 @@ class CreateProductAPIView(BaseAPIView):
 class GetAllProductAPIView(BaseAPIView):
     def get(self, request):
         products = Product.objects.select_related('brand', 'category')
-        return Response(ProductSerializer(products, many=True).data)
+        paginator = ProductsPagination()
+        page = paginator.paginate_queryset(products,request)
+        serializer = ProductSerializer(page,many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 
 class GetProductByIdAPIView(BaseAPIView):

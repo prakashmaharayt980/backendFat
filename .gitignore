@@ -4,3 +4,79 @@
 
 migrations/
 secrets/
+
+
+# ======================
+# PYTHON
+# ======================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ======================
+# VIRTUAL ENVIRONMENTS
+# ======================
+env/
+venv/
+.venv/
+ENV/
+
+# ======================
+# DJANGO
+# ======================
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# ======================
+# ENV FILES / SECRETS
+# ======================
+.env
+.env.*
+*.env
+
+# ======================
+# NODE / FRONTEND
+# ======================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
+
+# ======================
+# BUILD / DIST
+# ======================
+dist/
+build/
+
+# ======================
+# IDE / EDITORS
+# ======================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ======================
+# OS FILES
+# ======================
+.DS_Store
+Thumbs.db
+
+# ======================
+# TEST / COVERAGE
+# ======================
+.coverage
+htmlcov/
+.pytest_cache/
+
+# ======================
+# MIGRATIONS (OPTIONAL)
+# ======================
+# Uncomment ONLY if you don't want migrations tracked
+# **/migrations/
+# **/migrations/__init__.py

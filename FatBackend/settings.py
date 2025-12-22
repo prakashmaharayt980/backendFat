@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'emi',
     'blog',
     'core',
+    'payments',
 ]
 
 MIDDLEWARE = [
@@ -204,3 +205,43 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+
+
+
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'standard': {
+            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'debug.log',
+            'maxBytes': 1024*1024*5,  # 5 MB
+            'backupCount': 5,
+            'formatter': 'standard',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django.utils.autoreload': {   # suppress autoreload messages
+            'handlers': ['file'],
+            'level': 'ERROR',          # ignore DEBUG/INFO, log only real errors
+            'propagate': False,
+        },
+        '': {  # your app’s root logger
+            'handlers': ['file'],
+            'level': 'DEBUG',
+        },
+    },
+}

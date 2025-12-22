@@ -1,39 +1,32 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.db import DatabaseError, IntegrityError
+from rest_framework.permissions import IsAdminUser,AllowAny
+from django.db import DatabaseError
 from rest_framework.exceptions import ValidationError
-from rest_framework.permissions import AllowAny
 import logging
+
 
 logger = logging.getLogger('django')
 
-class BaseAPIView(APIView):
-    permission_classes = [AllowAny]
+class BasePaymentAPIView(APIView):
+    permission_classes = [AllowAny,]
 
     def handle_exception(self, exc):
         if isinstance(exc, ValidationError):
             logger.error(str(exc),exc_info=True)
-            return Response(
-                {"error": exc.detail},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        if isinstance(exc, IntegrityError):
-            logger.error(str(exc),exc_info=True)
-            return Response(
-                {"error": "Database integrity error."},
-                status=status.HTTP_409_CONFLICT
-            )
+            return Response({"error": exc.detail}, status=status.HTTP_400_BAD_REQUEST)
 
         if isinstance(exc, DatabaseError):
             logger.error(str(exc),exc_info=True)
             return Response(
-                {"error": "Database error occurred."},
+                {"error": "Database error occurred"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+        
+
         logger.error(str(exc),exc_info=True)
         return Response(
-            {"error": "An unexpected error occurred.", "details": str(exc)},
+            {"error": "Unexpected error", "details": str(exc)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
